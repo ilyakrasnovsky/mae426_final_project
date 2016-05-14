@@ -6,17 +6,49 @@ clear;
 clc;
 close all;
 
-%Full-throttle (FT) Falcon 9 Version data (incomplete)
-%m_0 = 549054;     % Initial mass of rocket (Falcon 9) [kg]
-%m_p = 22800;	%Mass of payload + rest of rocket after reusable stage detach [kg]
-%D_main = 3.7;		%Rocket Diameter (Falcon 9) [m
-%t_b = 162;		%1st stage (reusable) burn time [s]
-
 %General constants (for v1.1 of Falcon 9)
+
+%Total rocket data
+m_tot_i = 505846;     %Total Initial mass of rocket (Falcon 9) [kg]
+
+%First stage (reusable stage) data
+
+m_1_i = 392500; %Total initial mass [kg]
+m_1_p = 372500; %Total propellant mass [kg]
+m_1_s = m_1_i - m_1_p; %Structure mass [kg]
+T_1_SL =  5885058.92; %sea level thrust [N]
+T_1_vac = 6672405.43; % vacuum thrust [N]
+Isp_1_SL = 282; %sea level specific impulse [s]
+Isp_1_vac = 311; %vacuum specific impulse [s]
+tb_1 = 185; %burn time [s]
+D_1 = 3.66; %Diameter [m]
+A_1 = pi*D_1^2/4; %Area [m^2]
+C_D_1 = 1.14; %drag coefficient
+
+%Second stage data
+
+m_2_i = 79000; %Total initial mass [kg]
+m_2_p = 75000; %Total propellant mass [kg]
+m_2_s =  m_2_i - m_2_p; %Structure mass  [kg]
+T_2_vac = 800683.553; %vacuum thrust [N]
+Isp_2_vac = 340; %vacuum specific impulse [s]
+tb_2 = 375; %burn time [s]
+D_2 = 3.66; %Diameter [m]
+A_2 = pi*D_2^2/4; %Area [m^2]
+C_D_2 = 1.14; %drag coefficient
+
+%Dragon capsule (third stage) data to LEO 
+
+m_3_i = m_tot_i - m_1_i - m_2_i; %Total mass of the Dragon Capsule
+m_3_pay = 13150; %Total LEO payload mass of Dragon capsule [kg]
+D_3 = 5.2; %Diameter [m]
+A_3 = pi*D_3^2/4; %Area [m^2]
+C_D_3 = 1.14; %drag coefficient
+
+%{
 
 C_D_main = 1.14;	%Drag coefficient of rocket before reusable stage detach (cone)
 C_D_reuse = 2;  	%Drag coefficient of reusable stage after detach
-m_0 = 549054;     % Initial mass of rocket (Falcon 9) [kg]
 m_p = 22800;	%Mass of payload + rest of rocket after reusable stage detach [kg]
 m_fuel_main = m_0 - m_p; %Mass of reusable stage fuel [kg]
 t_b = 162;		%1st stage (reusable) burn time [s] (162 for FT)
@@ -29,8 +61,8 @@ T_main = 7607000;	%Sea level thrust of reusable stage [N]
 c_e_main = T_main/m_dot_main; 	%Effective exhaust velocity of rocket [m/s]
 c_e_reuse = 1;		%Effective exhaust velocity of reusable stage [m/s]
 
-g_0 = 9.81;     	%Acceleration due to gravity at sea level [m/s^2]
-rho = 1.225;		%Density of air at sea level [kg/m^3]
+g_SL = 9.81;     	%Acceleration due to gravity at sea level [m/s^2]
+rho_SL = 1.225;		%Density of air at sea level [kg/m^3]
 tspan = [0 t_b];     %Simulation Time interval [s]
 
 %Initial conditions
@@ -43,7 +75,7 @@ u_0 = 0;	 % Initial rocket velocity [m/s]
 
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
 [t,s] = ode45(@reusablerocket, tspan, [h_0, u_0], [], A_main, C_D_main,...
-			 c_e_main,m_dot_main, m_0, g_0, rho);
+			 c_e_main, m_dot_main, m_0, g_SL, rho_SL);
 
 %Plot the values of interest over time
 
@@ -59,3 +91,4 @@ title('Velocity of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
 %legend('b_1 direction (omega_1)','b_3 direction (omega_3');
+%}
