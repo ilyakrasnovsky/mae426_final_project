@@ -45,37 +45,46 @@ D_3 = 5.2; %Diameter [m]
 A_3 = pi*D_3^2/4; %Area [m^2]
 C_D_3 = 1.14; %drag coefficient
 
-%{
-
-C_D_main = 1.14;	%Drag coefficient of rocket before reusable stage detach (cone)
-C_D_reuse = 2;  	%Drag coefficient of reusable stage after detach
-m_p = 22800;	%Mass of payload + rest of rocket after reusable stage detach [kg]
-m_fuel_main = m_0 - m_p; %Mass of reusable stage fuel [kg]
-t_b = 162;		%1st stage (reusable) burn time [s] (162 for FT)
-m_dot_main = m_fuel_main/t_b; %Mass flow rate of propellant out of rocket [kg/s]
-m_dot_reuse = 1;	%Mass flow rate of propellant out of reusable stage [kg/s]
-D_main = 3.66;		%Rocket Diameter (Falcon 9) [m]
-A_main = pi*D_main^2/4;		%Drag area of rocket [m^2]
-A_reuse = 2;		%Drag area of reusable stage [m^2]
-T_main = 7607000;	%Sea level thrust of reusable stage [N]
-c_e_main = T_main/m_dot_main; 	%Effective exhaust velocity of rocket [m/s]
-c_e_reuse = 1;		%Effective exhaust velocity of reusable stage [m/s]
+%Physical Constants
 
 g_SL = 9.81;     	%Acceleration due to gravity at sea level [m/s^2]
 rho_SL = 1.225;		%Density of air at sea level [kg/m^3]
-tspan = [0 t_b];     %Simulation Time interval [s]
+R_earth = 6371000;  %Radius of the earth [m]
+tspan = [0 600];     %Simulation Time interval [s]
 
-%Initial conditions
+%Initial conditions for ode45
 
 h_0 = 0;     % Initial altitude of rocket above Earth's surface [m]
 u_0 = 0;	 % Initial rocket velocity [m/s]
 %a_0 = 0;	 % Initial rocket acceleration [m/s^2]
-                
+  
+f9 = rocket(m_tot_i, m_1_i, m_1_p, m_1_s, ... 
+			T_1_SL, T_1_vac, Isp_1_SL, Isp_1_vac, ...
+			tb_1, D_1, A_1, C_D_1, m_2_i, m_2_p, ...
+			m_2_s, T_2_vac, Isp_2_vac, tb_2, ... 
+			D_2, A_2, C_D_2, m_3_i, m_3_pay, ... 
+			D_3, A_3, C_D_3)
+
+%{
+%Grouped Inputs to ode45
+
+A = [A1, A2, A3];
+C_D = [C_D_1, C_D_2, C_D_3];
+m_i = [m_1_i, m_2_i, m_3_i];
+m_p = [m_1_p, m_2_p];
+m_s_pay = [m_1_s, m_2_s, m_3_pay];
+T_SL = [T_1_SL];
+T_vac = [T_1_vac, T_2_vac];
+Isp_SL = [Isp_1_SL];
+Isp_vac = [Isp_1_vac, Isp_2_vac];
+tb = [tb_1, tb_2];
+
 % Call ode45 to solve the equation of motion ODE
 
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
-[t,s] = ode45(@reusablerocket, tspan, [h_0, u_0], [], A_main, C_D_main,...
-			 c_e_main, m_dot_main, m_0, g_SL, rho_SL);
+[t,s] = ode45(@reusablerocket, tspan, [h_0, u_0], [], A, C_D, ...
+			 m_tot_i, m_i, m_p, m_s_pay, T_SL, T_vac, Isp_SL, Isp_vac, ...
+			 g_SL, rho_SL, R_earth, tb);
 
 %Plot the values of interest over time
 
