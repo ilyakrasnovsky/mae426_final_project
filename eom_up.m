@@ -28,19 +28,26 @@ function soln = eom_up(t,s, rocket, constants)
 	g = constants.g_SL * constants.R_earth^2 / (constants.R_earth^2 + s(1)^2);
     
     if (strcmp(current_stage, 'firststage'))        
-        %Atmospheric Specific impulse model
-        %Need to design as a function of altitude
-        Isp = (mainbody.Isp_SL + mainbody.Isp_vac) / 2;
+        h_vac = 80000; %80000 m treated as vacuum height
+        %Atmospheric Specific impulse and Thrust models (interpolation)
+        %{
+        if (s(1) < h_vac)
+            Isp = mainbody.Isp_SL + (mainbody.Isp_vac - mainbody.Isp_SL) * s(1) / 80000;
+            T = mainbody.T_SL + (mainbody.T_vac - mainbody.T_SL) * s(1) / 80000;
+        else
+            Isp = mainbody.Isp_vac;
+            T = mainbody.T_vac;
+        end
+        %}
 
-        %Atmospheric Thrust model
-        %Need to design as a function of altitude
-        T = (mainbody.T_SL + mainbody.T_vac) / 2;
+        T = mainbody.T_SL;
+        Isp = mainbody.Isp_vac;
 
         %Constant Mass flow rate model 
         m_dot = T / (Isp * g);
     
         %Mass of structure stage 1 detaches at 100000 km
-        m = rocket.m_tot_i - m_dot*t;
+        m = rocket.m_tot_i - m_dot*t
         
     elseif (strcmp(current_stage, 'secondstage'))
         %Atmospheric Specific impulse model
