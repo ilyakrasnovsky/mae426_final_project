@@ -44,10 +44,10 @@ function soln = eom_up(t,s, rocket, constants)
         Isp = mainbody.Isp_vac;
 
         %Constant Mass flow rate model 
-        m_dot = T / (Isp * g);
+        %m_dot = T / (Isp * g);
     
         %Mass of structure stage 1 detaches at 100000 km
-        m = rocket.m_tot_i - m_dot*t
+        %m = rocket.m_tot_i - m_dot*t
         
     elseif (strcmp(current_stage, 'secondstage'))
         %Atmospheric Specific impulse model
@@ -57,17 +57,16 @@ function soln = eom_up(t,s, rocket, constants)
         T = mainbody.T_vac;
 
         %Constant Mass flow rate model 
-        m_dot = T / (Isp * g);
+        %m_dot = T / (Isp * g);
     
         %Mass of structure stage 1 detaches at 100000 km
-        m = (rocket.m_tot_i - rocket.firststage.m_i) - m_dot*(t-rocket.firststage.tb);
-        
+        %m = (rocket.m_tot_i - rocket.firststage.m_i) - m_dot*(t-rocket.firststage.tb);
     end
     
 	%Atmospheric Drag model
 	D = mainbody.C_D*rho*s(2)^2*mainbody.A/2;
     
-	soln(1,1) = s(2);
-	soln(2,1) = T / m - D / m - g;
-	
+	soln(1,1) = s(2); %hdot = u
+	soln(2,1) = T / s(3) - D / s(3) - g; %udot = force balance
+    soln(3,1) = -T / (Isp * g); %mdot = mdot
 end

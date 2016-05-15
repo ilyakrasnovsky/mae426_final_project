@@ -68,6 +68,8 @@ cons = constants(g_SL, rho_SL, R_earth);
 %Initial conditions for ode45 simulation of rocket going up
 h_0 = 0;     % Initial altitude of rocket above Earth's surface [m]
 u_0 = 0;	 % Initial rocket velocity [m/s]
+m_0 = f9.m_tot_i; %Initial rocket mass [kg]
+%mdot_0 = f9.firststage.T_SL / (f9.firststage.Isp_vac * cons.g_SL); %Initial rocket mass flow rate [kg]
 %a_0 = 0;	 % Initial rocket acceleration [m/s^2]
 
 %Change tspan for burn time
@@ -75,21 +77,29 @@ tspan = [0 f9.firststage.tb];     %Simulation Time interval [s]
 
 % Call ode45 to solve the equation of motion ODE
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
-[t,s] = ode45(@eom_up, tspan, [h_0, u_0], [], f9, cons);
+[t,s] = ode45(@eom_up, tspan, [h_0, u_0, m_0], [], f9, cons);
 
 %Plot the values of interest over time
-figure(1)
+figure()
 plot(t,s(:,1));  % h vs. t
 title('Altitude of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
-figure(2);
+figure();
 plot(t,s(:,2)); % u vs. t
 title('Velocity of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
 %legend('b_1 direction (omega_1)','b_3 direction (omega_3');
+
+figure();
+plot(t,s(:,3)); % u vs. t
+title('Mass of the Rocket vs. Time');
+xlabel('Time (s)');
+ylabel('Mass (kg)');
+
+s(end,3)
 
 %Rocket down
 %Initial conditions on the way down
@@ -106,13 +116,13 @@ tspan = [0 502];     %Simulation Time interval 502 seconds of falling
 [t,s] = ode45(@eom_down, tspan, [hdown_0, udown_0], [], f9, cons);
 
 %Plot the values of interest over time
-figure(3)
+figure()
 plot(t,s(:,1));  % h vs. t
 title('Altitude of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
-figure(4);
+figure();
 plot(t,s(:,2)); % u vs. t
 title('Velocity of the Rocket vs. Time');
 xlabel('Time (s)');
