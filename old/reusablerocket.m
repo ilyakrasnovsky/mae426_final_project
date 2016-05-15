@@ -17,16 +17,16 @@ function soln = reusablerocket(t,s, rocket, constants)
 	end
 
 	%Atmospheric Density model
-	rho = constants.rho_SL*exp((-2.9e-5)*s(1)^1.15)
+	rho = constants.rho_SL*exp((-2.9e-5)*s(1)^1.15);
 	
 	%Geopotential Gravity model
-	g = constants.g_SL * constants.R_earth^2 / (constants.R_earth^2 + s(1)^2)
+	g = constants.g_SL * constants.R_earth^2 / (constants.R_earth^2 + s(1)^2);
 
 	%Atmospheric Specific impulse model
-	Isp = (mainbody.Isp_SL + mainbody.Isp_vac) / 2
+	Isp = (mainbody.Isp_SL + mainbody.Isp_vac) / 2;
 
 	%Atmospheric Thrust model
-	T = (mainbody.T_SL + mainbody.T_vac) / 2
+	T = (mainbody.T_SL + mainbody.T_vac) / 2;
 
 	%Constant Mass flow rate model 
 	m_dot = T / (Isp * g)
