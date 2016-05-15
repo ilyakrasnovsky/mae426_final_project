@@ -63,7 +63,7 @@ rho_SL = 1.225;		%Density of air at sea level [kg/m^3]
 R_earth = 6371000;  %Radius of the earth [m]
 cons = constants(g_SL, rho_SL, R_earth);
 
-tspan = [0 600];     %Simulation Time interval [s]
+tspan = [0 tb_1];     %Simulation Time interval [s]
 
 %Initial conditions for ode45
 
@@ -75,7 +75,6 @@ u_0 = 0;	 % Initial rocket velocity [m/s]
 
 f9 = rocket(m_tot_i, f9_firststage, f9_secondstage, f9_capsule);
 
-%{
 % Call ode45 to solve the equation of motion ODE
 
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
@@ -95,4 +94,3 @@ title('Velocity of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
 %legend('b_1 direction (omega_1)','b_3 direction (omega_3');
-%}

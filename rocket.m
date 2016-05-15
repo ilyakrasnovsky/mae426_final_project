@@ -16,7 +16,8 @@ classdef rocket
 
 	methods
 		%Constructor takes in total mass, firststage object,
-		%secondstage object, and capsule object
+		%secondstage object, and capsule object, all instances
+		%of stage
 		function newRocket = rocket(m_tot_i, firststage, secondstage, capsule)
 			newRocket.m_tot_i = m_tot_i;
 			newRocket.firststage = firststage;

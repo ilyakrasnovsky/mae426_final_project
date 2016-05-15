@@ -1,27 +1,42 @@
 %Function handle for rocket equation for a reusable rocket 
 % s : state : (altitude, velocity)
-function soln = reusablerocket(t,s, rocket, constants))
+function soln = reusablerocket(t,s, rocket, constants)
 
-	m = m_0 - m_dot_main*t;
-	T_main = m_dot_main*c_e_main;
+	%First stage burn 
+	if (t <= rocket.firststage.tb)
+		disp('Simulating First Stage Burn');
+		mainbody = rocket.firststage;
+	%Second stage burn
+    elseif (t <= rocket.firststage.tb + rocket.secondstage.tb)
+		disp('Simulating Second Stage Burn');
+		mainbody = rocket.secondstage;
+	%Rest of mission
+	else
+		disp('Simulating Rest of Mission');
+		mainbody = rocket.capsule;
+	end
 
 	%Atmospheric Density model
-	rho = constants.rho_SL*exp((-2.9e-5)*s(1)^1.15);
+	rho = constants.rho_SL*exp((-2.9e-5)*s(1)^1.15)
 	
+	%Geopotential Gravity model
+	g = constants.g_SL * constants.R_earth^2 / (constants.R_earth^2 + s(1)^2)
+
 	%Atmospheric Specific impulse model
-	Isp_1_SL = 1;
+	Isp = (mainbody.Isp_SL + mainbody.Isp_vac) / 2
 
 	%Atmospheric Thrust model
+	T = (mainbody.T_SL + mainbody.T_vac) / 2
 
 	%Constant Mass flow rate model 
-
-	%Geopotential Gravity model
-	g = constants.g_SL * constants.R_earth^2 / (constants.R_earth^2 + s(1)^2);
-
+	m_dot = T / (Isp * g)
+	
+	m = rocket.m_tot_i - m_dot*t;
+	
 	%Atmospheric Drag model
-	D = C_D_main*rho*s(2)^2*A_main/2;
+	D = mainbody.C_D*rho*s(2)^2*mainbody.A/2;
 
 	soln(1,1) = s(2);
-	soln(2,1) = T_main / m - D / m - g;
+	soln(2,1) = T / m - D / m - g;
 	
 end
