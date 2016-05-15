@@ -14,7 +14,7 @@ function soln = eom_down(t,s, rocket, constants)
     T = 0;
     
     %Initial Mass, only structure of stage 1
-    m = mainbody.m_s;
+    %m = mainbody.m_s;
     
     %Mass, thrust, and ISP constant for initial down calculations
     %{
@@ -36,10 +36,18 @@ function soln = eom_down(t,s, rocket, constants)
 	%Atmospheric Drag model
 	D = mainbody.C_D*rho*s(2)^2*mainbody.A/2;
     
-	soln(1,1) = s(2);
-    if (s(2) > 0)
-        soln(2,1) = T / m - D / m - g;
-    elseif (s(2) <= 0)
-        soln(2,1) = T / m + D / m - g;
+    %Cannot go below 0 altitude
+    if (s(1) <= 0)
+        soln(1,1) = 0;
+    else
+        soln(1,1) = s(2);    
     end
+    %Drag always opposes velocity
+    if (s(2) > 0)
+        soln(2,1) = T / s(3) - D / s(3) - g;
+    elseif (s(2) <= 0)
+        soln(2,1) = T / s(3) + D / s(3) - g;
+    end
+    soln(3,1) = 0;
+    soln
 end

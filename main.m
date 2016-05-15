@@ -91,40 +91,41 @@ plot(t,s(:,2)); % u vs. t
 title('Velocity of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
-%legend('b_1 direction (omega_1)','b_3 direction (omega_3');
 
 figure();
-plot(t,s(:,3)); % u vs. t
+plot(t,s(:,3)); % m vs. t
 title('Mass of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Mass (kg)');
 
-s(end,3)
-
 %Rocket down
 %Initial conditions on the way down
-hdown_0 = s(end,1); %s(end, 1) height at detach from Elon Musk
-udown_0 = s(end,2); %s(end, 2) velocity at detach 
-hdown_f = 0; %Final height
-%Hits ground after 502 seconds
+hdown_0 = s(end,1); %firststage height at detach [m]
+udown_0 = s(end,2); %firststage velocity at detach [m/s] 
+mdown_0 = f9.firststage.m_i - (f9.m_tot_i - s(end,3)); %firststage total mass at detach [kg]
 
 %Change tspan for burn time
 tspan = [0 502];     %Simulation Time interval 502 seconds of falling
 
 %Call ode45 to solve the equation of motion ODE
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
-[t,s] = ode45(@eom_down, tspan, [hdown_0, udown_0], [], f9, cons);
+[t,s] = ode45(@eom_down, tspan, [hdown_0, udown_0, mdown_0], [], f9, cons);
 
 %Plot the values of interest over time
 figure()
 plot(t,s(:,1));  % h vs. t
-title('Altitude of the Rocket vs. Time');
+title('Altitude of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
 figure();
 plot(t,s(:,2)); % u vs. t
-title('Velocity of the Rocket vs. Time');
+title('Velocity of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
-%legend('b_1 direction (omega_1)','b_3 direction (omega_3');
+
+figure();
+plot(t,s(:,3)); % m vs. t
+title('Mass of the Reusable Stage vs. Time');
+xlabel('Time (s)');
+ylabel('Mass (kg)');
