@@ -15,9 +15,11 @@ function soln = eom_down(t,s, rocket, constants)
     if (s(3) > mainbody.m_s)
         %T = -0.5*mainbody.T_SL; %immediate downward boost
         %below a given altitude
-        h_fire = 80000; %altitude at which to fire upward boost
+        h_fire = 80000; %altitude at which to fire upward boost [m]
+        u_fire = 0; %velocity at which to fire upward boost [m/s]
         if (s(1) < h_fire)
-            T = 0.09*mainbody.T_SL;
+        %if (s(2) < u_fire)
+            T = 0.06*mainbody.T_SL;
         else
             T = 0;
         end
@@ -44,4 +46,5 @@ function soln = eom_down(t,s, rocket, constants)
     end
     %mass flow rate must be negative
     soln(3,1) = -T / (Isp * g);
+    %soln
 end
