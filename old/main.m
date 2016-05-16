@@ -43,7 +43,8 @@ f9_secondstage = stage(m_2_i, m_2_p, ...
 			m_2_s, m_2_pay, 'NA', T_2_vac, 'NA', Isp_2_vac, tb_2, ... 
 			D_2, A_2, C_D_2);
 
-%Dragon capsule (third stage) data to LEO
+%Dragon capsule (third stage) data to LEO 
+
 m_3_i = m_tot_i - m_1_i - m_2_i; %Total mass of the Dragon Capsule
 m_3_pay = 13150; %Total LEO payload mass of Dragon capsule [kg]
 D_3 = 5.2; %Diameter [m]
@@ -61,12 +62,15 @@ g_SL = 9.81;     	%Acceleration due to gravity at sea level [m/s^2]
 rho_SL = 1.225;		%Density of air at sea level [kg/m^3]
 R_earth = 6371000;  %Radius of the earth [m]
 cons = constants(g_SL, rho_SL, R_earth);
+%LEO_h = 1.1275e+05 m for first stage breakoff
+%LEO_u = 2.1568e+03 m/s for first stage breakoff
 
-%Rocket Up
 %Initial conditions for ode45 simulation of rocket going up
 h_0 = 0;     % Initial altitude of rocket above Earth's surface [m]
 u_0 = 0;	 % Initial rocket velocity [m/s]
 m_0 = f9.m_tot_i; %Initial rocket mass [kg]
+%mdot_0 = f9.firststage.T_SL / (f9.firststage.Isp_vac * cons.g_SL); %Initial rocket mass flow rate [kg]
+%a_0 = 0;	 % Initial rocket acceleration [m/s^2]
 
 %Change tspan for burn time
 tspan = [0 f9.firststage.tb];     %Simulation Time interval [s]
@@ -94,44 +98,39 @@ title('Mass of the Rocket vs. Time');
 xlabel('Time (s)');
 ylabel('Mass (kg)');
 
-%Rocket Down
+%Rocket down
 %Initial conditions on the way down
 hdown_0 = s(end,1); %firststage height at detach [m]
 udown_0 = s(end,2); %firststage velocity at detach [m/s] 
 mdown_0 = f9.firststage.m_i - (f9.m_tot_i - s(end,3)); %firststage total mass at detach [kg]
 
 %Change tspan for burn time
-tspan = [0 550]; %550 Arbitrary to guarentee code time to converge
+tspan = [0 550];     %Simulation Time interval 502 seconds of falling
 
 %Call ode45 to solve the equation of motion ODE
-options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
-[t,s] = ode45(@eom_down, tspan, [hdown_0, udown_0, mdown_0], options, f9, cons);
+%options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
+[t,s] = ode45(@eom_down, tspan, [hdown_0, udown_0, mdown_0], [], f9, cons);
 
 %Plot the values of interest over time
 figure()
-%subplot(1,3,1)
+subplot(1,3,1)
 plot(t,s(:,1));  % h vs. t
 title('Altitude of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
-figure();
-%subplot(1,3,2)
+%figure();
+subplot(1,3,2)
 plot(t,s(:,2)); % u vs. t
 title('Velocity of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
 
-figure();
-%subplot(1,3,3)
+%figure();
+subplot(1,3,3)
 plot(t,s(:,3)); % m vs. t
 title('Mass of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Mass (kg)');
 
-disp('End Height = ');
-disp(s(end,1));
-disp('End Velocity = ');
-disp(s(end,2));
-disp('End Mass = ');
-disp(s(end,3));
+s(end,2)
