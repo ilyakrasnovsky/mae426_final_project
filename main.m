@@ -105,7 +105,7 @@ udown_0 = s(end,2); %firststage velocity at detach [m/s]
 mdown_0 = f9.firststage.m_i - (f9.m_tot_i - s(end,3)); %firststage total mass at detach [kg]
 
 %Change tspan for burn time
-tspan = [0 502];     %Simulation Time interval 502 seconds of falling
+tspan = [0 550];     %Simulation Time interval 502 seconds of falling
 
 %Call ode45 to solve the equation of motion ODE
 %options = odeset('RelTol', 1e-100);  %increases tolerances to avoid rounding errors
@@ -113,19 +113,24 @@ tspan = [0 502];     %Simulation Time interval 502 seconds of falling
 
 %Plot the values of interest over time
 figure()
+subplot(1,3,1)
 plot(t,s(:,1));  % h vs. t
 title('Altitude of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
-figure();
+%figure();
+subplot(1,3,2)
 plot(t,s(:,2)); % u vs. t
 title('Velocity of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Velocity (m/s)');
 
-figure();
+%figure();
+subplot(1,3,3)
 plot(t,s(:,3)); % m vs. t
 title('Mass of the Reusable Stage vs. Time');
 xlabel('Time (s)');
 ylabel('Mass (kg)');
+
+s(end,2)
